@@ -1,0 +1,11 @@
+C:\Users\isaac\OneDrive\Desktop\promethius_all\promethius\EventDerive\target\debug\deps\libquote-fcd7435cd94fde4f.rmeta: C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src/lib.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\ext.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\format.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\ident_fragment.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\to_tokens.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\runtime.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\spanned.rs
+
+C:\Users\isaac\OneDrive\Desktop\promethius_all\promethius\EventDerive\target\debug\deps\quote-fcd7435cd94fde4f.d: C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src/lib.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\ext.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\format.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\ident_fragment.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\to_tokens.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\runtime.rs C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\spanned.rs
+
+C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src/lib.rs:
+C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\ext.rs:
+C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\format.rs:
+C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\ident_fragment.rs:
+C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\to_tokens.rs:
+C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\runtime.rs:
+C:\Users\isaac\.cargo\registry\src\index.crates.io-6f17d22bba15001f\quote-1.0.37\src\spanned.rs:

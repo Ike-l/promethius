@@ -5,6 +5,8 @@ use small_derive_deref::{
     DerefMut,
 };
 
+use event_deriver::EventDeriver;
+
 use winit::{
     application::ApplicationHandler, 
     event_loop::ActiveEventLoop, 
@@ -17,10 +19,10 @@ use winit::{
 
 const CONTROL_FLOW: winit::event_loop::ControlFlow = winit::event_loop::ControlFlow::Poll;
 
-#[derive(Debug, Deref, DerefMut, Event)]
+#[derive(Debug, Deref, DerefMut, EventDeriver)]
 pub struct WindowEventBus(pub WindowEvent);
 
-#[derive(Debug, Deref, DerefMut, Event)]
+#[derive(Debug, Deref, DerefMut, EventDeriver)]
 pub struct DeviceEventBus(pub DeviceEvent);
 
 #[derive(Debug, Deref, DerefMut)]

@@ -1,0 +1,11 @@
+[package]
+name = "event_deriver"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+syn = "2.0.79"
+quote = "1.0.37"
+
+[lib]
+proc-macro = true
