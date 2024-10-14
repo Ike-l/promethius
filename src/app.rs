@@ -1,98 +1,87 @@
 use std::collections::HashMap;
 
 use small_derive_deref::{
-    Deref, 
-    DerefMut,
+    Deref, DerefMut
 };
 
 use event_deriver::EventDeriver;
 
 use winit::{
-    application::ApplicationHandler, 
-    event_loop::ActiveEventLoop, 
-    window::WindowId,
-    event::{
-        DeviceEvent, 
-        WindowEvent
+    application::ApplicationHandler, event::{
+        DeviceEvent, WindowEvent
     }, 
+    event_loop::{
+        ActiveEventLoop, ControlFlow
+    }, 
+    window::WindowId, event::DeviceId
 };
 
-const CONTROL_FLOW: winit::event_loop::ControlFlow = winit::event_loop::ControlFlow::Poll;
+use super::{
+    scheduler::{
+        Scheduler, Event, EventReader, EventWriter, IntoSystem, System
+    },
+    core_plugins::render_plugin::prelude::State, plugins::PluginTrait
+};
+
+const CONTROL_FLOW: ControlFlow = ControlFlow::Poll;
 
 #[derive(Debug, Deref, DerefMut, EventDeriver)]
-pub struct WindowEventBus(pub WindowEvent);
+pub struct WindowEventBus(pub winit::event::WindowEvent);
 
 #[derive(Debug, Deref, DerefMut, EventDeriver)]
-pub struct DeviceEventBus(pub DeviceEvent);
+pub struct DeviceEventBus(pub winit::event::DeviceEvent);
 
-#[derive(Debug, Deref, DerefMut)]
+#[derive(Debug, Deref, DerefMut, Default)]
 pub struct AppBuilder {
     app: App,
 }
 
-impl Default for AppBuilder {
-    fn default() -> Self {
-        Self {
-            app: App::default()
-        }
-    }
-}
-
 impl AppBuilder {
     pub fn run(&mut self) -> Result<(), winit::error::EventLoopError> {
-        match winit::event_loop::EventLoop::new() {
-            Ok(event_loop) => {
-                event_loop.set_control_flow(CONTROL_FLOW);
-                event_loop.run_app(&mut self.app)
-            },
-            Err(e) => {
-                panic!("Creating the event loop\n{:?}", e)
-            }
-        }
+        log::info!("Running app");
+
+        let event_loop = winit::event_loop::EventLoop::new()
+            .expect(&format!("Creating the event loop"));
+
+        event_loop.set_control_flow(CONTROL_FLOW);
+        event_loop.run_app(&mut self.app)
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct App {
-    scheduler: Scheduler
+    scheduler: Scheduler,
 }
 
-impl Default for App {
-    fn default() -> Self {
-        Self {
-            scheduler: Scheduler::default()
-        }
-    }
-}
-
-impl App {
-    pub fn add_plugin(&mut self, plugin: Box<dyn PluginTrait>) {
+impl App {   
+    fn add_plugin(&mut self, plugin: Box<dyn PluginTrait>) {
         plugin.build(self);
     }
 
-    pub fn add_plugins(&mut self, plugins: Vec<Box<dyn PluginTrait>>) {
-        plugins
+    fn add_plugins(&mut self, plugin: Vec<Box<dyn PluginTrait>>) {
+        plugin
             .into_iter()
-            .for_each(|plugin| self.add_plugin(plugin)
+            .for_each(
+            |plugin| self.add_plugin(plugin)
         );
     }
-
+    
     pub fn add_system<I, S: System + 'static>(
-        &mut self,
-        phase: f64,
+        &mut self, 
+        phase: f64, 
         system: impl IntoSystem<I, System = S>
     ) {
         self.scheduler.add_system(phase, system);
     }
-
-    pub fn add_resource<R: 'static>(&mut self, resource: R) {
-        self.scheduler.add_resource(resource);
+    
+    pub fn add_resource<R: 'static>(&mut self, res: R) {
+        self.scheduler.add_resource(res);
     }
-
-    pub fn remove_resource<R: 'static>(&mut self, resource: R) {
-        self.scheduler.remove_resource(resource);
+    
+    pub fn remove_resource<R: 'static>(&mut self, res: R) {
+        self.scheduler.remove_resource(res);
     }
-
+    
     pub fn remove_resource_by_type<R: 'static>(&mut self) {
         self.scheduler.remove_resource_by_type::<R>();
     }
@@ -115,7 +104,7 @@ impl App {
 }
 
 impl ApplicationHandler for App {
-    fn resumed(&mut self, event_loop: &winit::event_loop::ActiveEventLoop) {
+    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         // Needed for creating "states", for the window
         let raw_event_loop: *const ActiveEventLoop = event_loop;
         unsafe {
@@ -128,70 +117,67 @@ impl ApplicationHandler for App {
 
         self.add_event::<WindowEventBus>();
         self.add_event::<DeviceEventBus>();
-
+        log::info!("Running scheduler. Phases: START -> TICK");
         self.scheduler.run(Scheduler::START, Scheduler::TICK);
         self.remove_resource_by_type::<&ActiveEventLoop>();
     }
-    
+
     fn window_event(
-            &mut self,
-            event_loop: &ActiveEventLoop,
-            window_id: winit::window::WindowId,
-            event: winit::event::WindowEvent,
-        ) {
+        &mut self,
+        event_loop: &ActiveEventLoop,
+        window_id: WindowId,
+        event: WindowEvent,
+    ) {
+        log::info!("Received event: {:?}", event);
         let redraw_requested = match event {
             WindowEvent::RedrawRequested => true,
             WindowEvent::CloseRequested => {
+                log::info!("Running scheduler. Phases: END -> EXIT");
                 self.scheduler.run(Scheduler::END, Scheduler::EXIT);
                 event_loop.exit();
                 false
             },
             _ => {
                 match self.get_event_writer::<WindowEventBus>() {
-                    Some(window_event_bus) => {
+                    Some(mut window_event_bus) => {
                         window_event_bus.send(WindowEventBus(event));
                     },
-                    None => {
-                        panic!("Event received before creation of 'WindowEventBus'")
-                    }
+                    None => { log::warn!("Event received before creation of 'WindowEventBus'") }
                 };
                 false
             }
         };
 
         if redraw_requested {
+            log::info!("Running scheduler. Phases: TICK -> END");
             self.scheduler.run(Scheduler::TICK, Scheduler::END);
             match self.get_resource_mut::<HashMap<WindowId, State>>() {
                 Some(states) => {
                     match states.get(&window_id) {
                         Some(state) => {
-                            state.window().reqest_redraw();
+                            log::info!("Redraw requested");
+                            state.window().request_redraw();
                         },
-                        None => {
-                            panic!("Retrieving 'State' using 'WindowId': 'fn window_event'")
-                        }
+                        None => { log::warn!("Retrieving 'State' using 'WindowId': 'fn window_event'"); }
                     }
                 },
-                None => {
-                    panic!("Retriving 'Vec<State>' from 'app'")
-                }
+                None => { log::warn!("Retrieving 'Vec<State>' from 'app'") }
             }
         }
     }
 
     fn device_event(
-            &mut self,
-            event_loop: &ActiveEventLoop,
-            device_id: winit::event::DeviceId,
-            event: winit::event::DeviceEvent,
-        ) {
+        &mut self,
+        _event_loop: &ActiveEventLoop,
+        _device_id: DeviceId,
+        event: DeviceEvent,
+    ) {
         match self.get_event_writer::<DeviceEventBus>() {
             Some(mut device_event_bus) => {
                 device_event_bus.send(DeviceEventBus(event))
             },
-            None => {
-                panic!("Event received before creation of 'DeviceEventBus'")
-            }
+            None => { log::warn!("Event received before creation of 'DeviceEventBus'") }
         }
     }
 }
+
