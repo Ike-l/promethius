@@ -4,16 +4,9 @@ use core::f64;
 
 use super::{
     super::{
-        Res, 
-        ResMut, 
-        RefWorld,
-        MutWorld,
-        EventWriter,
-        EventReader,
-        Event
+        Res, ResMut, RefWorld, MutWorld, EventWriter, EventReader, Event
     }, 
-    create_scheduler, 
-    run_scheduler_start,
+    create_scheduler, run_scheduler_start,
 };
 
 fn wrong_assert_system() {

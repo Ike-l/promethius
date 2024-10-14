@@ -38,6 +38,8 @@ pub struct AppBuilder {
 
 impl AppBuilder {
     pub fn run(&mut self) -> Result<(), winit::error::EventLoopError> {
+        env_logger::init();
+        
         log::info!("Running app");
 
         let event_loop = winit::event_loop::EventLoop::new()
@@ -54,11 +56,11 @@ pub struct App {
 }
 
 impl App {   
-    fn add_plugin(&mut self, plugin: Box<dyn PluginTrait>) {
+    pub fn add_plugin(&mut self, plugin: Box<dyn PluginTrait>) {
         plugin.build(self);
     }
 
-    fn add_plugins(&mut self, plugin: Vec<Box<dyn PluginTrait>>) {
+    pub fn add_plugins(&mut self, plugin: Vec<Box<dyn PluginTrait>>) {
         plugin
             .into_iter()
             .for_each(

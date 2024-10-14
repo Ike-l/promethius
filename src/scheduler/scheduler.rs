@@ -4,7 +4,7 @@ use std::{
     }, 
     cell::UnsafeCell, 
     collections::{
-        BTreeMap, HashMap, btree_map::Entry
+        BTreeMap, HashMap, 
     },
     ops::Bound::{
         Included, Excluded
@@ -27,7 +27,6 @@ pub type AccessMap = HashMap<TypeId, Access>;
 #[derive(Debug, Default)]
 pub struct Scheduler {
     systems: BTreeMap<OrderedFloat<f64>, Vec<StoredSystem>>,
-    //systems: Vec<(f64, Vec<StoredSystem>)>,
     resources: TypeMap,
     accesses: AccessMap,
 }
@@ -49,7 +48,8 @@ impl Scheduler {
                 Excluded(OrderedFloat(end_exclusive))
             ))
             .for_each(
-                |(_, systems)| {
+                |(phase, systems)| {
+                    log::info!("Running phase: {:?}", phase);
                     systems
                         .iter_mut()
                         .for_each(

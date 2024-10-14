@@ -39,6 +39,7 @@ pub trait SystemParam {
     unsafe fn retrieve<'r>(resources: &'r TypeMap) -> Self::Item<'r>;
 
     unsafe fn retrieve_by_type<'r, T: 'static>(resources: &'r TypeMap) -> &T {
+        log::info!("Retrieving type immutably: {:?}", type_name::<T>());
         let unsafe_cell = resources
             .get(&TypeId::of::<T>())
             .expect(&format!("Retrieving resource: {:?}", type_name::<T>()));
@@ -51,6 +52,7 @@ pub trait SystemParam {
     }
 
     unsafe fn retrieve_by_type_mut<'r, T: 'static>(resources: &'r TypeMap) -> &mut T {
+        log::info!("Retrieving type mutably: {:?}", type_name::<T>());
         let unsafe_cell = resources
             .get(&TypeId::of::<T>())
             .expect(&format!("Retrieving resource: {:?}", type_name::<T>()));

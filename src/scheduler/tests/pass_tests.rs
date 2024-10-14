@@ -2,22 +2,15 @@
 
 use core::f64;
 
-use small_derive_deref::{Deref, DerefMut};
+use small_derive_deref::{
+    Deref, DerefMut
+};
 
 use super::{
-    super::{
-        Res, 
-        ResMut, 
-        RefWorld,
-        MutWorld,
-        CommandBuffer,
-        EventWriter,
-        EventReader,
-        Event,
+    super::{ 
+        Res,  ResMut,  RefWorld, MutWorld, CommandBuffer, EventWriter, EventReader, Event,
     }, 
-    create_scheduler, 
-    run_scheduler_tick, 
-    run_scheduler_start
+    create_scheduler, run_scheduler_tick, run_scheduler_start
 };
 
 #[derive(Deref)]
