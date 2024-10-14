@@ -1,9 +1,9 @@
-#[derive(Debug)]
+#[derive(Debug, small_read_only::ReadOnly)]
 pub struct Texture {
-    pub texture: wgpu::Texture,
-    pub view: wgpu::TextureView,
-    pub sampler: wgpu::Sampler,
-    pub size: wgpu::Extent3d,
+    texture: wgpu::Texture,
+    view: wgpu::TextureView,
+    sampler: wgpu::Sampler,
+    size: wgpu::Extent3d,
 }
 
 impl Texture {
