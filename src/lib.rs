@@ -27,7 +27,7 @@ pub mod prelude {
         texture, 
         entity,
         acceleration_structures,
-        standards,
+        promethius_std,
     };
     
     pub use crate::app::{
