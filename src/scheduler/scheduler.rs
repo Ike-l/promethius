@@ -3,8 +3,15 @@ use std::{
         Any, TypeId,
     }, 
     cell::UnsafeCell, 
-    collections::HashMap
+    collections::{
+        BTreeMap, HashMap, btree_map::Entry
+    },
+    ops::Bound::{
+        Included, Excluded
+    },
 };
+
+use ordered_float::OrderedFloat;
 
 use super::{
     event::{
@@ -19,7 +26,8 @@ pub type AccessMap = HashMap<TypeId, Access>;
 
 #[derive(Debug, Default)]
 pub struct Scheduler {
-    systems: Vec<(f64, Vec<StoredSystem>)>,
+    systems: BTreeMap<OrderedFloat<f64>, Vec<StoredSystem>>,
+    //systems: Vec<(f64, Vec<StoredSystem>)>,
     resources: TypeMap,
     accesses: AccessMap,
 }
@@ -30,28 +38,25 @@ impl Scheduler {
     pub const END: f64 = 2.;
     pub const EXIT: f64 = 3.;
     
-    fn sort_systems(&mut self) {
-        self.systems.sort_unstable_by(
-            |(f, _), (s, _)| f.partial_cmp(s).unwrap()
-        );
-    }
-
     pub fn run(
         &mut self, 
         start: f64,
         end_exclusive: f64
     ) {
-        if start == Self::START { self.sort_systems(); }
-
-        for (_, systems) in self.systems.iter_mut().filter(
-            |(f, _)| f >= &start && f < &end_exclusive
-        ) {
-            for system in systems.iter_mut() {
-                system.run(&self.resources, &mut self.accesses);
-            }
-
-            self.accesses.clear();
-        }
+        self.systems
+            .range_mut((
+                Included(OrderedFloat(start)), 
+                Excluded(OrderedFloat(end_exclusive))
+            ))
+            .for_each(
+                |(_, systems)| {
+                    systems
+                        .iter_mut()
+                        .for_each(
+                            |system| system.run(&self.resources, &mut self.accesses)
+                        );
+                        self.accesses.clear();
+                });
 
         if start == Self::TICK { 
             self.process_event_queues();
@@ -83,13 +88,10 @@ impl Scheduler {
         assert!(!phase.is_nan(), "expected a number x: 0 <= x < 4; found NAN");
         assert!(phase < 4. && phase >= 0., "expected a number x: 0 <= x < 4; found {phase}");
 
-        let phase_systems = self.systems.iter_mut()
-            .find(|(f, _)| f == &phase);
-
-        match phase_systems {
-            Some((_, systems)) => systems.push(Box::new(system.into_system())),
-            None => self.systems.push((phase, vec![Box::new(system.into_system())]))
-        }
+        self.systems
+            .entry(OrderedFloat(phase))
+            .or_insert_with(Vec::new)
+            .push(Box::new(system.into_system()));
     }
 
     pub fn add_resource<R: 'static>(&mut self, res: R) {
