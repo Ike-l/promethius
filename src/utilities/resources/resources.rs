@@ -5,9 +5,7 @@ use std::{
     io::{
         BufReader, Cursor
     }, 
-    path::{
-        Path, PathBuf
-    }
+    path::PathBuf
 };
 
 use wgpu::util::DeviceExt;
@@ -19,20 +17,20 @@ use crate::prelude::{
 
 #[derive(Debug)]
 pub struct Resources {
-    pub obj_path: String,
-    pub mat_path: String,
+    pub obj_path: PathBuf,
+    pub mat_path: PathBuf,
 }
 
 impl Resources {
     pub fn new(obj_path: &str, mat_path: &str) -> Self {
         Self {
-            obj_path: obj_path.to_string(),
-            mat_path: mat_path.to_string(),
+            obj_path: PathBuf::from(obj_path),
+            mat_path: PathBuf::from(mat_path),
         }
     }
 
-    fn path(&self, path: &str, file_name: &str) -> PathBuf {
-        Path::new(path).join(file_name)
+    fn path(&self, path: &PathBuf, file_name: &str) -> PathBuf {
+        path.join(file_name)
     }
 
     async fn load_string(file_path: &PathBuf) -> anyhow::Result<String> {
@@ -89,11 +87,11 @@ impl Resources {
         ColoredModel::new(vec![mesh])
     }
 
-    pub async fn load_from_colored_model<C: Into<[f32; 4]> + Clone> (
+    pub async fn load_from_colored_model (
         &self,
         file_name: &str,
         topology: wgpu::PrimitiveTopology,
-        color: C,
+        color: [f32; 4],
         device: &wgpu::Device,
     ) -> anyhow::Result<ColoredModel> {
         let triangulate = match topology {
@@ -132,7 +130,7 @@ impl Resources {
                             model.mesh.positions[i * 3 + 1],
                             model.mesh.positions[i * 3 + 2],
                         ],
-                        color.clone().into(),
+                        color.clone(),
                     )).collect::<Vec<_>>();
     
                 let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
@@ -257,5 +255,35 @@ impl Resources {
                 materials,
             )
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Resources;
+
+    fn resources() -> Resources {
+        Resources::new("src/utilities/resources/tests/objs", "src/utilities/resources/tests/materials")
+    }
+
+    #[test]
+    fn path_test() {
+        let r = resources();
+        assert!(r.path(&r.obj_path, "exists.txt").exists());
+        assert!(r.path(&r.mat_path, "exists.txt").exists());
+    }
+
+    #[tokio::test]
+    async fn load_string_test() {
+        let r = resources();
+        let txt = Resources::load_string(&r.path(&r.obj_path, "exists.txt")).await.unwrap();
+        assert_eq!(txt, "Success!");
+    }
+
+    #[tokio::test]
+    async fn load_binary_test() {
+        let r = resources();
+        let bin = Resources::load_binary(&r.path(&r.mat_path, "exists.txt")).await.unwrap();
+        assert_eq!(bin, vec![65, 66, 67]);
     }
 }
