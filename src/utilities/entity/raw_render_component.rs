@@ -8,6 +8,8 @@ use super::{
 #[derive(Debug, bytemuck::Pod, bytemuck::Zeroable, Clone, Copy)]
 pub struct RawRenderComponent {
     model: [[FloatPrecision; 4]; 4],
+    tint: [FloatPrecision; 4],
+    highlight: [FloatPrecision; 4],
 }
 
 impl Vertex for RawRenderComponent {
@@ -37,15 +39,27 @@ impl Vertex for RawRenderComponent {
                     shader_location: 5,
                     format: VERTEX_FORMAT,
                 },
+                wgpu::VertexAttribute {
+                    offset: mem::size_of::<[FloatPrecision; 16]>() as wgpu::BufferAddress,
+                    shader_location: 6,
+                    format: VERTEX_FORMAT,
+                },
+                wgpu::VertexAttribute {
+                    offset: mem::size_of::<[FloatPrecision; 20]>() as wgpu::BufferAddress,
+                    shader_location: 7,
+                    format: VERTEX_FORMAT,
+                },
             ],
         }
     }
 }
 
 impl RawRenderComponent {
-    pub fn new(model: [[FloatPrecision; 4]; 4]) -> Self {
+    pub fn new(model: [[FloatPrecision; 4]; 4], tint: [FloatPrecision; 4], highlight: [FloatPrecision; 4]) -> Self {
         Self {
-            model
+            model,
+            tint,
+            highlight,
         }
     }
 }
