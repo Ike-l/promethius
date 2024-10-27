@@ -5,7 +5,7 @@ use super::{
 };
 
 use cgmath::{
-    Deg, InnerSpace, Matrix3, Matrix4, Quaternion, Rotation3, SquareMatrix, Vector3, Vector4
+    Array, Deg, InnerSpace, Matrix3, Matrix4, Quaternion, Rotation3, SquareMatrix, Vector3, Vector4
 };
 
 use log::warn;
@@ -74,12 +74,12 @@ impl InstanceRenderComponent {
     }
 
     pub fn local_rotate(&mut self, angle: &Deg<FloatPrecision>, axis: &Vector3<FloatPrecision>) {
-        let rotation_quat = Quaternion::from_axis_angle(axis.normalize(), angle);
+        let rotation_quat = Quaternion::from_axis_angle(axis.normalize(), *angle);
         self.local_rotation = rotation_quat * self.local_rotation;
     }
 
     pub fn global_rotate(&mut self, angle: &Deg<FloatPrecision>, axis: &Vector3<FloatPrecision>) {
-        let rotation_quat = Quaternion::from_axis_angle(axis.normalize(), angle);
+        let rotation_quat = Quaternion::from_axis_angle(axis.normalize(), *angle);
         self.global_rotation = rotation_quat * self.global_rotation;
     }
 
@@ -114,7 +114,7 @@ mod tests {
 
 		r.local_rotate(&Deg(45.0), &Vector3::unit_y());
 		let v = r.model_matrix() * Vector4::unit_x();
-		approx_equal(v.truncate(), Vector3::new(-0.7071068, 0.0, -07071068));
+		approx_equal(v.truncate(), Vector3::new(-0.7071068, 0.0, -0.7071068));
 	}
 
 	#[test]
@@ -129,7 +129,7 @@ mod tests {
 	fn scaling() {
 		let mut r = InstanceRenderComponent::default();
 		r.global_scale = Vector3::new(2.0, 2.0, 2.0);
-		let v = r.global_matrix() * Vector4::unit_x();
+		let v = r.model_matrix() * Vector4::unit_x();
 		approx_equal(v.truncate(), Vector3::new(2.0, 0.0, 0.0));
 		r.local_scale *= 2.0;
 		let v = r.model_matrix() * Vector4::new(1.0, 1.0, 1.0, 0.0);
@@ -140,10 +140,11 @@ mod tests {
 	fn translating() {
 		let mut r = InstanceRenderComponent::default();
 		r.global_translation = Vector3::unit_x();
+		// w = 1.0 allows translations
 		let v = r.model_matrix() * Vector4::new(1.0, 0.0, 0.0, 1.0);
 		approx_equal(v.truncate(), Vector3::new(2.0, 0.0, 0.0));
 		r.local_translation = Vector3::unit_y();
-		let v = r.model_matrix() * Vector4::new(0.0, 0.0, 0.0, 0.0);
+		let v = r.model_matrix() * Vector4::new(0.0, 0.0, 0.0, 1.0);
 		approx_equal(v.truncate(), Vector3::new(1.0, 1.0, 0.0));
 	}
 
