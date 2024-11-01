@@ -1,4 +1,9 @@
-use std::time::{Duration, Instant};
+use std::time::{
+    Duration, Instant
+};
+use small_derive_deref::{
+    Deref, DerefMut
+};
 
 pub mod prelude {
     pub use super::{
@@ -15,7 +20,7 @@ pub struct TimePlugin;
 impl PluginTrait for TimePlugin {
     fn build(&self, app: &mut crate::app::App) {
         app.add_system(1.001, update_time);
-        app.add_system(1.001, update_total_tick_count);
+        app.add_system(1.001, update_tick_count);
         app.add_resource(Time::default());
         app.add_resource(Tick(0));
 
@@ -25,6 +30,7 @@ impl PluginTrait for TimePlugin {
     }
 }
 
+#[derive(Debug)]
 pub struct Time {
     pub now: Instant,
     pub dt: Duration,
@@ -47,7 +53,7 @@ impl Time {
     }
 }
 
-#[derive(small_derive_deref::Deref, small_derive_deref::DerefMut)]
+#[derive(Debug, Deref, DerefMut)]
 pub struct Tick(u64);
 
 fn update_time(mut time: ResMut<Time>) {
@@ -56,7 +62,7 @@ fn update_time(mut time: ResMut<Time>) {
     time.now += dt;
 }
 
-fn update_total_tick_count(mut ticks: ResMut<Tick>) {
+fn update_tick_count(mut ticks: ResMut<Tick>) {
     **ticks += 1;
 } 
 
