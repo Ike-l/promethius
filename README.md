@@ -1,4 +1,4 @@
-# promethius
+# prometheus
 This "game engine" will be the core / underlying technology of a platform i want to build in the future</br>
 My goals for this and the platform:
 * Create and run games
