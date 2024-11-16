@@ -259,6 +259,19 @@ impl AABB {
         if self.max.y < other.max.y { self.max.y = other.max.y };
     }
 
+    pub fn expand_pos(&mut self, other: Position) {
+        if self.min.x > other.x {
+            self.min.x = other.x
+        } else if self.max.x < other.x {
+            self.max.x = other.x
+        };
+        if self.min.y > other.y {
+            self.min.y = other.y 
+        } else if self.max.y < other.y {
+            self.max.y = other.y 
+        };
+    }
+
     pub fn add(&self, position: &Position) -> AABB {
         AABB::new(
             self.min.add(position),
