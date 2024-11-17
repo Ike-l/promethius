@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use small_derive_deref::{
     Deref, DerefMut
 };
@@ -39,7 +37,7 @@ pub struct AppBuilder {
 impl AppBuilder {
     pub fn run(&mut self) -> Result<(), winit::error::EventLoopError> {
         env_logger::init();
-        
+
         log::info!("Running app");
 
         let event_loop = winit::event_loop::EventLoop::new()
@@ -127,10 +125,10 @@ impl ApplicationHandler for App {
     fn window_event(
         &mut self,
         event_loop: &ActiveEventLoop,
-        window_id: WindowId,
+        _window_id: WindowId,
         event: WindowEvent,
     ) {
-        log::info!("Received event: {:?}", event);
+        log::info!("Received window event: {:?}", event);
         let redraw_requested = match event {
             WindowEvent::RedrawRequested => true,
             WindowEvent::CloseRequested => {
@@ -153,14 +151,11 @@ impl ApplicationHandler for App {
         if redraw_requested {
             log::info!("Running scheduler. Phases: TICK -> END");
             self.scheduler.run(Scheduler::TICK, Scheduler::END);
-            match self.get_resource_mut::<HashMap<WindowId, State>>() {
+            match self.get_resource_mut::<Vec<State>>() {
                 Some(states) => {
-                    match states.get(&window_id) {
-                        Some(state) => {
-                            log::info!("Redraw requested");
-                            state.window().request_redraw();
-                        },
-                        None => { log::warn!("Retrieving 'State' using 'WindowId': 'fn window_event'"); }
+                    if let Some(state) = states.first() {
+                        log::info!("Redraw requested");
+                        state.window().request_redraw();
                     }
                 },
                 None => { log::warn!("Retrieving 'Vec<State>' from 'app'") }
@@ -174,6 +169,7 @@ impl ApplicationHandler for App {
         _device_id: DeviceId,
         event: DeviceEvent,
     ) {
+        log::info!("Received device event: {:?}", event);
         match self.get_event_writer::<DeviceEventBus>() {
             Some(mut device_event_bus) => {
                 device_event_bus.send(DeviceEventBus(event))

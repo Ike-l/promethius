@@ -44,7 +44,7 @@ impl Default for InstanceRenderComponent {
             local_scale: Vector3::from_value(1.0),
             global_scale: Vector3::from_value(1.0),
 
-            tint: Vector4::from_value(0.0), 
+            tint: Vector4::from_value(1.0), 
             highlight: Vector4::from_value(0.0), 
         }
     }

@@ -170,11 +170,6 @@ impl Scheduler {
             .and_then(|handler| handler.as_any().downcast_ref::<EventQueue<E>>())
     }
 
-    fn get_event_queue_mut<E: Event>(&self) -> Option<&mut EventQueue<E>> {
-        self.get_resource_mut::<Box<dyn EventQueueHandler>>()
-            .and_then(|handler| handler.as_any_mut().downcast_mut::<EventQueue<E>>())
-    }
-
     pub fn get_event_reader<E: Event>(&self) -> Option<EventReader<E>> {
         self.get_event_queue::<E>().map(
             |event_queue| 
@@ -185,12 +180,15 @@ impl Scheduler {
     }
 
     pub fn get_event_writer<E: Event>(&self) -> Option<EventWriter<E>> {
-        self.get_event_queue_mut::<E>().map(
-            |event_queue| 
-                EventWriter {
-                    events: ResMut { value: event_queue },
-                }
-            )
+        self.resources.get(&TypeId::of::<EventQueue<E>>()).map(|cell| {
+            let event_queue = unsafe { &mut *cell.get() };
+            let handler = event_queue.downcast_mut::<Box<dyn EventQueueHandler>>().unwrap();
+            let event_queue = handler.as_any_mut().downcast_mut::<EventQueue<E>>().unwrap();
+
+            EventWriter {
+                events: ResMut { value: event_queue },
+            }
+        })
     }
 
     fn process_event_queues(&mut self) {
