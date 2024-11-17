@@ -280,7 +280,6 @@ impl AABB {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;

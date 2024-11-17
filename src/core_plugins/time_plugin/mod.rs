@@ -53,8 +53,8 @@ impl Time {
     }
 }
 
-#[derive(Debug, Deref, DerefMut)]
-pub struct Tick(u64);
+#[derive(Debug, Default, Deref, DerefMut)]
+pub struct Tick(pub u64);
 
 fn update_time(mut time: ResMut<Time>) {
     let dt = Instant::now().duration_since(time.now);
