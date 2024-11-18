@@ -10,7 +10,7 @@ impl PluginTrait for DefaultCameraPlugin {
         app.add_system(0.1123, spawn_cameras);
     }
     fn id(&self) -> PluginId {
-        PluginId("slingshot_DefaultSpawnCameras".to_string())
+        PluginId("prometheus_DefaultSpawnCameras".to_string())
     }
 }
 

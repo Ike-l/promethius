@@ -26,7 +26,7 @@ impl PluginTrait for TimePlugin {
 
     }
     fn id(&self) -> PluginId {
-        PluginId("slingshot_TimePlugin".to_string())
+        PluginId("prometheus_TimePlugin".to_string())
     }
 }
 

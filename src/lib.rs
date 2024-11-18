@@ -31,7 +31,7 @@ pub mod prelude {
     };
     
     pub use crate::app::{
-        AppBuilder, WindowEventBus, DeviceEventBus
+        App, AppBuilder, WindowEventBus, DeviceEventBus
     };
 
     pub use crate::scheduler::{

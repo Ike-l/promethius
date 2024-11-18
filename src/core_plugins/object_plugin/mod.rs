@@ -26,6 +26,6 @@ impl PluginTrait for ObjectPlugin {
 
     }
     fn id(&self) -> PluginId {
-        PluginId("slingshot_ObjectPlugin".to_string())
+        PluginId("prometheus_ObjectPlugin".to_string())
     }
 }

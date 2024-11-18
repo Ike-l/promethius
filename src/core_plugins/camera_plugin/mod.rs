@@ -36,7 +36,7 @@ impl PluginTrait for CameraPlugin {
 
     }
     fn id(&self) -> PluginId {
-        PluginId("slingshot_CameraPlugin".to_string())
+        PluginId("prometheus_CameraPlugin".to_string())
     }
 }
 
