@@ -1,7 +1,8 @@
 use std::collections::VecDeque;
 
-use crate::utilities::promethius_std::prelude::{
-    Position, WorldId
+use crate::{
+    prelude::label_plugin::prelude::LabelComponent, 
+    utilities::promethius_std::prelude::Position
 };
 
 use super::AccelerationStructure;
@@ -181,14 +182,14 @@ impl QuadTree {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Collider {
     pub bbox: AABB,
-    pub id: WorldId,
+    pub entity_label: LabelComponent,
 }
 
 impl Collider {
-    pub fn new(bbox: AABB, id: WorldId) -> Self {
+    pub fn new(bbox: AABB, entity_label: LabelComponent) -> Self {
         Self {
             bbox,
-            id
+            entity_label
         }
     }
 }
@@ -303,7 +304,7 @@ mod tests {
                         0.0
                     ),
                 },
-                id: WorldId::Other(0),
+                entity_label: LabelComponent::new("0"),
             },
             Collider {
                 bbox: AABB {
@@ -318,7 +319,7 @@ mod tests {
                         0.0,
                     ),
                 },
-                id: WorldId::Other(1),
+                entity_label: LabelComponent::new("1"),
             },
             Collider {
                 bbox: AABB {
@@ -333,7 +334,7 @@ mod tests {
                         0.0
                     ),
                 },
-                id: WorldId::Other(2),
+                entity_label: LabelComponent::new("2"),
             },
             Collider {
                 bbox: AABB {
@@ -348,7 +349,7 @@ mod tests {
                         0.0
                     ),
                 },
-                id: WorldId::Other(3),
+                entity_label: LabelComponent::new("3"),
             },
         ]
     }
@@ -368,7 +369,7 @@ mod tests {
                         0.0
                     ),
                 },
-                id: WorldId::Other(0),
+                entity_label: LabelComponent::new("0"),
             },
             Collider {
                 bbox: AABB {
@@ -383,7 +384,7 @@ mod tests {
                         0.0
                     ),
                 },
-                id: WorldId::Other(1),
+                entity_label: LabelComponent::new("1"),
             },
             Collider {
                 bbox: AABB {
@@ -398,7 +399,7 @@ mod tests {
                         0.0
                     ),
                 },
-                id: WorldId::Other(2),
+                entity_label: LabelComponent::new("2"),
             },
             Collider {
                 bbox: AABB {
@@ -413,7 +414,7 @@ mod tests {
                         0.0
                     ),
                 },
-                id: WorldId::Other(3),
+                entity_label: LabelComponent::new("3"),
             },
         ]
     }
@@ -449,19 +450,19 @@ mod tests {
         
         let c = qt.query(&Position::new(4.0,4.0, 0.0));
         assert_eq!(c.len(), 1);
-        assert_eq!(c.first().unwrap().id, WorldId::Other(0));
+        assert_eq!(c.first().unwrap().entity_label, LabelComponent::new("0"));
 
         let c = qt.query(&Position::new(-4.0,-4.0, 0.0));
         assert_eq!(c.len(), 1);
-        assert_eq!(c.first().unwrap().id, WorldId::Other(2));
+        assert_eq!(c.first().unwrap().entity_label, LabelComponent::new("2"));
 
         let c = qt.query(&Position::new(4.0,-4.0, 0.0));
         assert_eq!(c.len(), 1);
-        assert_eq!(c.first().unwrap().id, WorldId::Other(1));
+        assert_eq!(c.first().unwrap().entity_label, LabelComponent::new("1"));
 
         let c = qt.query(&Position::new(-4.0,4.0, 0.0));
         assert_eq!(c.len(), 1);
-        assert_eq!(c.first().unwrap().id, WorldId::Other(3));
+        assert_eq!(c.first().unwrap().entity_label, LabelComponent::new("3"));
     }
 
     #[test]
@@ -470,19 +471,19 @@ mod tests {
         
         let c = qt.query(&Position::new(4.0, 4.0, 0.0));
         assert_eq!(c.len(), 1);
-        assert_eq!(c.first().unwrap().id, WorldId::Other(0));
+        assert_eq!(c.first().unwrap().entity_label, LabelComponent::new("0"));
 
         let c = qt.query(&Position::new(-4.0, -4.0, 0.0));
         assert_eq!(c.len(), 1);
-        assert_eq!(c.first().unwrap().id, WorldId::Other(2));
+        assert_eq!(c.first().unwrap().entity_label, LabelComponent::new("2"));
 
         let c = qt.query(&Position::new(4.0, -4.0, 0.0));
         assert_eq!(c.len(), 1);
-        assert_eq!(c.first().unwrap().id, WorldId::Other(1));
+        assert_eq!(c.first().unwrap().entity_label, LabelComponent::new("1"));
 
         let c = qt.query(&Position::new(-4.0, 4.0, 0.0));
         assert_eq!(c.len(), 1);
-        assert_eq!(c.first().unwrap().id, WorldId::Other(3));
+        assert_eq!(c.first().unwrap().entity_label, LabelComponent::new("3"));
     }
 
     #[test]
@@ -539,7 +540,7 @@ mod tests {
                 Position::new(-2.0, -2.0, 0.0), 
                 Position::new(2.0, 2.0, 0.0)
             ), 
-            WorldId::Other(0)
+            LabelComponent::new("0")
         );
 
         let c_2 = Collider::new(
@@ -547,7 +548,7 @@ mod tests {
                 Position::new(6.0, 6.0, 0.0), 
                 Position::new(8.0, 8.0, 0.0)
             ), 
-            WorldId::Other(0)
+            LabelComponent::new("0")
         );
         let buffer = vec![
             c_1.clone()
