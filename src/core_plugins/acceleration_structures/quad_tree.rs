@@ -1,11 +1,12 @@
 use std::collections::VecDeque;
 
-use crate::{
-    prelude::label_plugin::prelude::LabelComponent, 
-    utilities::promethius_std::prelude::Position
-};
+use crate::utilities::promethius_std::prelude::Position;
 
-use super::AccelerationStructure;
+use super::{
+    aabb::AABB, 
+    prelude::Collider, 
+    AccelerationStructure
+};
 
 #[derive(Debug)]
 enum Child {
@@ -20,6 +21,12 @@ pub struct QuadTree {
     depth: usize,
 }
 
+impl Default for QuadTree {
+    fn default() -> Self {
+        Self::auto(vec![])
+    }
+}
+
 impl AccelerationStructure for QuadTree {
     fn query(&self, position: &Position) -> Vec<Collider> {
         if !self.space.contains(position) {
@@ -28,7 +35,6 @@ impl AccelerationStructure for QuadTree {
 
         let middle = self.space.middle();
         let (middle_x, middle_y) = (middle.x, middle.y);
-
 
         let index = if position.x > middle_x {
             if position.y > middle_y { 2 } else { 3 }
@@ -42,7 +48,7 @@ impl AccelerationStructure for QuadTree {
             },
             Child::Leaf(l) => {
                 l.clone().into_iter().filter(
-                    |collider| collider.bbox.contains(position)
+                    |collider| collider.collider.bbox.contains(position)
                 ).collect::<Vec<Collider>>()
             }
         }
@@ -57,11 +63,12 @@ impl QuadTree {
         let mut buffers = [vec![], vec![], vec![], vec![]];
 
         buffer.into_iter().for_each(|collider| {
+            let bbox = &collider.collider.bbox;
             let mut pass = 0;
-            pass += if collider.bbox.min.x > middle_x { 1 } else { 2 };
-            pass += if collider.bbox.min.y > middle_y { 4 } else { 8 };
-            pass += if collider.bbox.max.x > middle_x { 16 } else { 32 };
-            pass += if collider.bbox.max.y > middle_y { 64 } else { 128 };
+            pass += if bbox.min.x > middle_x { 1 } else { 2 };
+            pass += if bbox.min.y > middle_y { 4 } else { 8 };
+            pass += if bbox.max.x > middle_x { 16 } else { 32 };
+            pass += if bbox.max.y > middle_y { 64 } else { 128 };
 
             match pass {
                 90 => {
@@ -99,7 +106,7 @@ impl QuadTree {
                     buffers[0].push(collider.clone());
                 },
                 166 | 165 | 101 | 150 | 149 | 169 | 105 => {
-                    panic!("min > max: pass: {:?}, bbox: {:?}", pass, collider.bbox)
+                    panic!("min > max: pass: {:?}, bbox: {:?}", pass, bbox)
                 },
                 _ => panic!("computing pass")
             }
@@ -138,11 +145,11 @@ impl QuadTree {
     pub fn auto(buffer: Vec<Collider>) -> Self {
         let space = buffer.iter().fold(AABB { min: Position::default(), max: Position::default() }, 
             |acc, cur| {
-                let min_x = if cur.bbox.min.x < acc.min.x { cur.bbox.min.x } else { acc.min.x };
-                let min_y = if cur.bbox.min.y < acc.min.y { cur.bbox.min.y } else { acc.min.y };
+                let min_x = if cur.collider.bbox.min.x < acc.min.x { cur.collider.bbox.min.x } else { acc.min.x };
+                let min_y = if cur.collider.bbox.min.y < acc.min.y { cur.collider.bbox.min.y } else { acc.min.y };
 
-                let max_x = if cur.bbox.max.x > acc.max.x { cur.bbox.max.x } else { acc.max.x };
-                let max_y = if cur.bbox.max.y > acc.max.y { cur.bbox.max.y } else { acc.max.y };
+                let max_x = if cur.collider.bbox.max.x > acc.max.x { cur.collider.bbox.max.x } else { acc.max.x };
+                let max_y = if cur.collider.bbox.max.y > acc.max.y { cur.collider.bbox.max.y } else { acc.max.y };
 
                 let min = Position::new(min_x, min_y, 0.0);
                 let max = Position::new(max_x, max_y, 0.0);
@@ -179,258 +186,86 @@ impl QuadTree {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct Collider {
-    pub bbox: AABB,
-    pub entity_label: LabelComponent,
-}
-
-impl Collider {
-    pub fn new(bbox: AABB, entity_label: LabelComponent) -> Self {
-        Self {
-            bbox,
-            entity_label
-        }
-    }
-}
-
-#[derive(Debug, Default, Clone, PartialEq)]
-pub struct AABB {
-    pub min: Position,
-    pub max: Position,
-}
-
-impl AABB {
-    pub fn new(min: Position, max: Position) -> Self {
-        Self {
-            min,
-            max
-        }
-    }
-    fn middle(&self) -> Position {
-        Position::new(
-            (self.min.x + self.max.x) / 2.0,
-            (self.min.y + self.max.y) / 2.0,
-            (self.min.z + self.max.z) / 2.0,
-        )
-    }
-
-    fn split_2d(&self) -> [AABB; 4] {
-        let middle = self.middle();
-        [
-            AABB {
-                min: self.min.clone(), 
-                max: middle.clone(),
-            },
-            AABB {
-                min: Position::new(
-                    self.min.x, 
-                    middle.y,
-                    0.0
-                ), 
-                max: Position::new(
-                    middle.x, 
-                    self.max.y,
-                    0.0
-                ),
-            },
-            AABB {
-                min: middle.clone(), 
-                max: self.max.clone(),
-            },
-            AABB {
-                min: Position::new(
-                    middle.x, 
-                    self.min.y,
-                    0.0
-                ),
-                max: Position::new(
-                    self.max.x, 
-                    middle.y,
-                    0.0
-                ),
-            },
-        ]
-    }
-
-    fn contains(&self, position: &Position) -> bool {
-        position >= &self.min && position <= &self.max
-    }
-
-    pub fn expand(&mut self, other: &AABB) {
-        if self.min.x > other.min.x { self.min.x = other.min.x };
-        if self.min.y > other.min.y { self.min.y = other.min.y };
-        if self.max.x < other.max.x { self.max.x = other.max.x };
-        if self.max.y < other.max.y { self.max.y = other.max.y };
-    }
-
-    pub fn expand_pos(&mut self, other: Position) {
-        if self.min.x > other.x {
-            self.min.x = other.x
-        } else if self.max.x < other.x {
-            self.max.x = other.x
-        };
-        if self.min.y > other.y {
-            self.min.y = other.y 
-        } else if self.max.y < other.y {
-            self.max.y = other.y 
-        };
-    }
-
-    pub fn add(&self, position: &Position) -> AABB {
-        AABB::new(
-            self.min.add(position),
-            self.max.add(position),
-        )
-    }
-}
 
 #[cfg(test)]
 mod tests {
+    use crate::prelude::{
+        acceleration_structures::prelude::ColliderComponent, 
+        label_plugin::prelude::LabelComponent
+    };
+
     use super::*;
 
     fn generate_quadrants() -> Vec<Collider> {
         vec![
-            Collider {
-                bbox: AABB {
-                    min: Position::new(
-                        3.0,
-                        3.0,
-                        0.0
-                    ),
-                    max: Position::new(
-                        6.0,
-                        6.0,
-                        0.0
-                    ),
-                },
-                entity_label: LabelComponent::new("0"),
-            },
-            Collider {
-                bbox: AABB {
-                    min: Position::new(
-                        3.0,
-                        -6.0,
-                        0.0,
-                    ),
-                    max: Position::new(
-                        6.0,
-                        -3.0,
-                        0.0,
-                    ),
-                },
-                entity_label: LabelComponent::new("1"),
-            },
-            Collider {
-                bbox: AABB {
-                    min: Position::new(
-                        -6.0,
-                        -6.0,
-                        0.0
-                    ),
-                    max: Position::new(
-                        -3.0,
-                        -3.0,
-                        0.0
-                    ),
-                },
-                entity_label: LabelComponent::new("2"),
-            },
-            Collider {
-                bbox: AABB {
-                    min: Position::new(
-                        -6.0,
-                        3.0,
-                        0.0
-                    ),
-                    max: Position::new(
-                        -3.0,
-                        6.0,
-                        0.0
-                    ),
-                },
-                entity_label: LabelComponent::new("3"),
-            },
+            Collider::new(
+                ColliderComponent::new(AABB {
+                    min: Position::new(3.0, 3.0, 0.0),
+                    max: Position::new(6.0, 6.0, 0.0),
+                }),
+                LabelComponent::new("0"),
+            ),
+            Collider::new(
+                ColliderComponent::new(AABB {
+                    min: Position::new(3.0, -6.0, 0.0),
+                    max: Position::new(6.0, -3.0, 0.0),
+                }),
+                LabelComponent::new("1"),
+            ),
+            Collider::new(
+                ColliderComponent::new(AABB {
+                    min: Position::new(-6.0, -6.0, 0.0),
+                    max: Position::new(-3.0, -3.0, 0.0),
+                }),
+                LabelComponent::new("2"),
+            ),
+            Collider::new(
+                ColliderComponent::new(AABB {
+                    min: Position::new(-6.0, 3.0, 0.0),
+                    max: Position::new(-3.0, 6.0, 0.0),
+                }),
+                LabelComponent::new("3"),
+            ),
         ]
     }
 
     fn generate_overlapped() -> Vec<Collider> {
         vec![
-            Collider {
-                bbox: AABB {
-                    min: Position::new(
-                        3.0,
-                        3.0,
-                        0.0
-                    ),
-                    max: Position::new(
-                        6.0,
-                        6.0,
-                        0.0
-                    ),
-                },
-                entity_label: LabelComponent::new("0"),
-            },
-            Collider {
-                bbox: AABB {
-                    min: Position::new(
-                        3.0,
-                        3.0,
-                        0.0
-                    ),
-                    max: Position::new(
-                        6.0,
-                        6.0,
-                        0.0
-                    ),
-                },
-                entity_label: LabelComponent::new("1"),
-            },
-            Collider {
-                bbox: AABB {
-                    min: Position::new(
-                        3.0,
-                        3.0,
-                        0.0
-                    ),
-                    max: Position::new(
-                        6.0,
-                        6.0,
-                        0.0
-                    ),
-                },
-                entity_label: LabelComponent::new("2"),
-            },
-            Collider {
-                bbox: AABB {
-                    min: Position::new(
-                        3.0,
-                        3.0,
-                        0.0
-                    ),
-                    max: Position::new(
-                        6.0,
-                        6.0,
-                        0.0
-                    ),
-                },
-                entity_label: LabelComponent::new("3"),
-            },
+            Collider::new(
+                ColliderComponent::new(AABB {
+                    min: Position::new(3.0, 3.0, 0.0),
+                    max: Position::new(6.0, 6.0, 0.0),
+                }),
+                LabelComponent::new("0"),
+            ),
+            Collider::new(
+                ColliderComponent::new(AABB {
+                    min: Position::new(3.0, 3.0, 0.0),
+                    max: Position::new(6.0, 6.0, 0.0),
+                }),
+                LabelComponent::new("1"),
+            ),
+            Collider::new(
+                ColliderComponent::new(AABB {
+                    min: Position::new(3.0, 3.0, 0.0),
+                    max: Position::new(6.0, 6.0, 0.0),
+                }),
+                LabelComponent::new("2"),
+            ),
+            Collider::new(
+                ColliderComponent::new(AABB {
+                    min: Position::new(3.0, 3.0, 0.0),
+                    max: Position::new(6.0, 6.0, 0.0),
+                }),
+                LabelComponent::new("3"),
+            ),
         ]
     }
 
     fn ten_space() -> AABB {
         AABB {
-            min: Position::new(
-                -10.0,
-                -10.0,
-                0.0           
-            ),
-            max: Position::new(
-                10.0,
-                10.0, 
-                0.0         
-            )
+            min: Position::new(-10.0, -10.0, 0.0),
+            max: Position::new(10.0, 10.0, 0.0),
         }
     }
     
@@ -536,18 +371,18 @@ mod tests {
     #[test]
     fn auto_correct_space() {
         let c_1 = Collider::new(
-            AABB::new(
+            ColliderComponent::new(AABB::new(
                 Position::new(-2.0, -2.0, 0.0), 
                 Position::new(2.0, 2.0, 0.0)
-            ), 
+            )), 
             LabelComponent::new("0")
         );
 
         let c_2 = Collider::new(
-            AABB::new(
+            ColliderComponent::new(AABB::new(
                 Position::new(6.0, 6.0, 0.0), 
                 Position::new(8.0, 8.0, 0.0)
-            ), 
+            )), 
             LabelComponent::new("0")
         );
         let buffer = vec![
@@ -555,7 +390,7 @@ mod tests {
         ];
         let qt = QuadTree::auto(buffer);
 
-        assert_eq!(qt.space, c_1.bbox);
+        assert_eq!(qt.space, c_1.collider.bbox);
 
         let buffer = vec![
             c_1.clone(),

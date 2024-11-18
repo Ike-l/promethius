@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use super::{entity::prelude::InstanceRenderComponent, time_plugin::prelude::Tick, MutWorld};
+use super::time_plugin::prelude::Tick;
 
 // click once = on, click after = off
 #[derive(Debug, Default)]
@@ -27,8 +27,8 @@ pub struct TimedButtonComponent {
     pub delay: Delay,
 }
 
-pub fn toggle_button(world: MutWorld) {
-    for (_, (button, render)) in &mut world.query::<(&mut ToggleButtonComponent, &mut InstanceRenderComponent)>() {
 
-    }
-}
+
+// input
+// pub struct ClickComponent;
+// with ClickComponent dispatch on <Entity + Event> as UIWindowEvent || UIDeviceEvent

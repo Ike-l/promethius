@@ -16,6 +16,7 @@ pub mod prelude {
         render_plugin,  
         ui_plugin,
         label_plugin,
+        acceleration_structures,
     };
 
     #[allow(unused_braces)]
@@ -27,22 +28,22 @@ pub mod prelude {
         resources, 
         texture, 
         entity,
-        acceleration_structures,
         promethius_std,
+        bimap,
     };
     
     pub use crate::app::{
         App, AppBuilder, WindowEventBus, DeviceEventBus
     };
-
+    
     pub use crate::scheduler::{
         Res, ResMut, RefWorld, MutWorld, EventWriter, EventReader, CommandBuffer,
     };
-
+    
     pub use crate::plugins::{
         PluginId, PluginTrait, PluginCollisionHandler
     };
-
+    
     pub use wgpu::PrimitiveTopology::{
         LineList, TriangleList,
     };

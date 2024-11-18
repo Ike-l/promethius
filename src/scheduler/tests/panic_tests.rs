@@ -85,7 +85,7 @@ fn event_writer_system(_: EventWriter<Event1>) {}
 fn event_reader_system(_: EventReader<Event1>) {}
 
 #[test]
-#[should_panic(expected = "assertion `left == right` failed: conflicting access in system; attempting to access promethius::scheduler::tests::panic_tests::Event1 mutably and immutably at the same time; consider creating a new phase\n  left: Write\n right: Read")]
+#[should_panic(expected = "assertion `left == right` failed: conflicting access in system; attempting to access prometheus::scheduler::tests::panic_tests::Event1 mutably and immutably at the same time; consider creating a new phase\n  left: Write\n right: Read")]
 fn event_send_read_same_phase() {
     let mut scheduler = create_scheduler();
     scheduler.add_system(0., event_writer_system);
@@ -96,7 +96,7 @@ fn event_send_read_same_phase() {
 }
 
 #[test]
-#[should_panic(expected = "conflicting access in system; attempting to access promethius::scheduler::tests::panic_tests::Event1 mutably and immutably at the same time; consider creating a new phase")]
+#[should_panic(expected = "conflicting access in system; attempting to access prometheus::scheduler::tests::panic_tests::Event1 mutably and immutably at the same time; consider creating a new phase")]
 fn event_read_send_same_phase() {
     let mut scheduler = create_scheduler();
     scheduler.add_system(0., event_reader_system);
