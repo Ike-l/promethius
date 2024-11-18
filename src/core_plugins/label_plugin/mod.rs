@@ -18,7 +18,7 @@ impl PluginTrait for LabelPlugin {
     }
 
     fn id(&self) -> PluginId {
-        PluginId("prometheus_LabelPlugin".to_string())
+        PluginId("prometheus_LabelPlugin")
     }
 }
 

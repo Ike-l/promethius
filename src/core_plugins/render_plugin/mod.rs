@@ -39,7 +39,7 @@ impl PluginTrait for RenderPlugin {
         
     }
     fn id(&self) -> PluginId {
-        PluginId("prometheus_RenderPlugin".to_string())
+        PluginId("prometheus_RenderPlugin")
     }
 }
 

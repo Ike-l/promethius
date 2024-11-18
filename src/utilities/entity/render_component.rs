@@ -1,5 +1,3 @@
-use crate::prelude::object_plugin::prelude::ObjectId;
-
 use super::{
     raw_render_component::RawRenderComponent, FloatPrecision
 };
@@ -13,7 +11,6 @@ use log::warn;
 #[derive(Debug)]
 pub struct InstanceRenderComponent {
     pub visible: bool,
-    pub object_id: ObjectId,
 
     pub local_translation: Vector3<FloatPrecision>,
     pub global_translation: Vector3<FloatPrecision>,
@@ -32,8 +29,6 @@ impl Default for InstanceRenderComponent {
     fn default() -> Self {
         Self {
             visible: true,
-			// want alternative..
-            object_id: ObjectId("Used Default(), use 'new' and pass the object id".to_string()),
 
             local_translation: Vector3::from_value(0.0),
             global_translation: Vector3::from_value(0.0),
@@ -51,13 +46,6 @@ impl Default for InstanceRenderComponent {
 }
 
 impl InstanceRenderComponent {
-    pub fn new(object_id: ObjectId) -> Self {
-        Self {
-            object_id,
-            ..Default::default()
-        }
-    }
-
     pub fn to_raw(&self) -> RawRenderComponent {
         let model = self.model_matrix();
 

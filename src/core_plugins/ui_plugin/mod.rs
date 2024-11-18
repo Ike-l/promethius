@@ -16,7 +16,7 @@ impl PluginTrait for UIPlugin {
     }
 
     fn id(&self) -> PluginId {
-        PluginId("prometheus_UIPlugin".to_string())
+        PluginId("prometheus_UIPlugin")
     }
 }
 

@@ -4,14 +4,22 @@ use crate::prelude::{
         ObjectRegistry
     },
     camera_plugin::prelude::{
-        PerspProjection, CameraId, CameraRenderComponent
+        PerspProjection, CameraRenderComponent
     },
     Res, ResMut, RefWorld
 };
 
-use super::prelude::{PipelineType, RenderConfig, WindowDimensions};
+use super::{
+    label_plugin::prelude::LabelComponent, 
+    prelude::{
+        PipelineType, RenderConfig, WindowDimensions
+    }
+};
 
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::HashMap, 
+    sync::Arc
+};
 
 use winit::window::Window;
 
@@ -203,9 +211,9 @@ pub fn render_system(object_registry: ResMut<ObjectRegistry>, state: Res<Vec<Sta
             occlusion_query_set: None,
         });
 
-        let mut query = world.query::<(&CameraId, &CameraRenderComponent)>();
+        let mut query = world.query::<(&LabelComponent, &CameraRenderComponent)>();
 
-        let mut camera: HashMap<&CameraId, &wgpu::BindGroup> = HashMap::new();
+        let mut camera: HashMap<&LabelComponent, &wgpu::BindGroup> = HashMap::new();
         for (_, (camera_id, camera_render_component)) in &mut query {
             camera.insert(camera_id, camera_render_component.bind_group());
         }
@@ -225,7 +233,7 @@ pub fn render_system(object_registry: ResMut<ObjectRegistry>, state: Res<Vec<Sta
                 if instance_buffer.size() == 0 {
                     continue;
                 }
-                let camera_bind_group = camera.get(&object.camera_id).expect(&format!("No CameraId found: {:?}", object.camera_id));
+                let camera_bind_group = camera.get(&object.camera_label).expect(&format!("No CameraId found: {:?}", object.camera_label));
 
                 render_pass.set_vertex_buffer(1, instance_buffer.slice(..));
                 render_pass.draw_model_instanced(&object.model, object.instance_count().clone(), *camera_bind_group);

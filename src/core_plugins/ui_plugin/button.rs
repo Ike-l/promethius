@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use super::{entity::prelude::InstanceRenderComponent, time_plugin::Tick, MutWorld};
+use super::{entity::prelude::InstanceRenderComponent, time_plugin::prelude::Tick, MutWorld};
 
 // click once = on, click after = off
 #[derive(Debug, Default)]

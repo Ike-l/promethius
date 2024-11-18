@@ -11,7 +11,7 @@ pub mod prelude {
     };
     
     pub use object_registry::{
-        Object, ObjectId, ObjectRegistry
+        Object, ObjectRegistry
     };
 }
 
@@ -26,6 +26,6 @@ impl PluginTrait for ObjectPlugin {
 
     }
     fn id(&self) -> PluginId {
-        PluginId("prometheus_ObjectPlugin".to_string())
+        PluginId("prometheus_ObjectPlugin")
     }
 }

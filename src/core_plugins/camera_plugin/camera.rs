@@ -1,11 +1,8 @@
-use small_derive_deref::{
-    Deref, DerefMut
-};
-
 use crate::prelude::{
     render_plugin::prelude::State,
-    time_plugin::Time,
-    EventReader, MutWorld, RefWorld, Res, ResMut, WindowEventBus
+    time_plugin::prelude::Time,
+    EventReader, MutWorld, RefWorld, Res, ResMut, WindowEventBus,
+    label_plugin::prelude::LabelComponent,
 };
 
 use super::{
@@ -16,12 +13,9 @@ use super::{
     }, 
 };
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone, DerefMut, Deref)]
-pub struct CameraId(pub String);
-
 #[derive(Debug, hecs_macros::Bundle)]
 pub struct Camera {
-    pub camera_id: CameraId,
+    pub label: LabelComponent,
     render_component: CameraRenderComponent,
     controller: Box<dyn CameraController>,
 }
@@ -30,7 +24,7 @@ impl Camera {
     pub fn new<T: CameraController + 'static>(
         render_component: CameraRenderComponent, 
         controller: T, 
-        camera_id: CameraId
+        label: LabelComponent
     ) -> Self {
         match &render_component.projection {
             CameraProjectionComponent::Ortho(_) => {
@@ -46,7 +40,7 @@ impl Camera {
         Self {
             render_component,
             controller: Box::new(controller),
-            camera_id,
+            label,
         }
     }
 }

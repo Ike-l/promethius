@@ -1,4 +1,5 @@
 use camera_plugin::prelude::*;
+use label_plugin::prelude::LabelComponent;
 use render_plugin::prelude::State;
 
 use crate::prelude::*;
@@ -10,7 +11,7 @@ impl PluginTrait for DefaultCameraPlugin {
         app.add_system(0.1123, spawn_cameras);
     }
     fn id(&self) -> PluginId {
-        PluginId("prometheus_DefaultSpawnCameras".to_string())
+        PluginId("prometheus_DefaultSpawnCameras")
     }
 }
 
@@ -44,7 +45,7 @@ pub fn spawn_cameras(mut world: MutWorld, states: Res<Vec<State>>) {
             4.0, 
             1.0
         ),
-        CameraId("ortho".to_string())
+        LabelComponent::new("ortho")
     );
 
     world.spawn(camera);
@@ -73,7 +74,7 @@ pub fn spawn_cameras(mut world: MutWorld, states: Res<Vec<State>>) {
             4.0, 
             1.0
         ),
-        CameraId("persp".to_string())
+        LabelComponent::new("persp")
     );
 
     world.spawn(camera);
@@ -99,7 +100,7 @@ pub fn spawn_cameras(mut world: MutWorld, states: Res<Vec<State>>) {
             0.0, 
             1.0
         ),
-        CameraId("stationary_ortho".to_string())
+        LabelComponent::new("stationary_ortho")
     );
 
     world.spawn(camera);

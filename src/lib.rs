@@ -15,6 +15,7 @@ pub mod prelude {
         time_plugin,
         render_plugin,  
         ui_plugin,
+        label_plugin,
     };
 
     #[allow(unused_braces)]

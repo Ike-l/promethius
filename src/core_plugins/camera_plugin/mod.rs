@@ -11,9 +11,7 @@ pub mod prelude {
 
     pub use controller_component::*;
 
-    pub use camera::{
-        Camera, CameraId
-    };
+    pub use camera::Camera;
 
     pub use orthographic::{
         OrthoController, OrthoProjection, OrthoUniform, OrthoView
@@ -36,7 +34,7 @@ impl PluginTrait for CameraPlugin {
 
     }
     fn id(&self) -> PluginId {
-        PluginId("prometheus_CameraPlugin".to_string())
+        PluginId("prometheus_CameraPlugin")
     }
 }
 

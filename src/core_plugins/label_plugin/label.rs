@@ -1,11 +1,21 @@
 use std::collections::HashMap;
 use hecs::Entity;
 
-use super::{RefWorld, ResMut};
+use super::{
+    RefWorld, ResMut
+};
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct LabelComponent {
-    id: String
+    pub id: String
+}
+
+impl LabelComponent {
+    pub fn new(id: &str) -> Self {
+        Self {
+            id: id.to_string()
+        }
+    }
 }
 
 #[derive(Debug, Default)]

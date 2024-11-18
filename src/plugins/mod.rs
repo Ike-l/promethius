@@ -15,4 +15,4 @@ pub trait PluginCollisionHandler {
 
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone)]
-pub struct PluginId(pub String);
+pub struct PluginId(pub &'static str);
