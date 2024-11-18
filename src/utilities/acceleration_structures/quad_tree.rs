@@ -1,5 +1,9 @@
 use std::collections::VecDeque;
-use crate::utilities::promethius_std::prelude::{Position, WorldId};
+
+use crate::utilities::promethius_std::prelude::{
+    Position, WorldId
+};
+
 use super::AccelerationStructure;
 
 #[derive(Debug)]

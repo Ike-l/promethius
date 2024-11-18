@@ -20,7 +20,7 @@ impl Default for Delay {
     }
 }
 
-// click once = on, after x ticks = off
+// click once = on, after delay = off
 #[derive(Debug, Default)]
 pub struct TimedButtonComponent {
     pub on: bool,

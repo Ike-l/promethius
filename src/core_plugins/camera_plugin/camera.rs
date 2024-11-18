@@ -1,16 +1,15 @@
 use crate::prelude::{
     render_plugin::prelude::State,
     time_plugin::prelude::Time,
-    EventReader, MutWorld, RefWorld, Res, ResMut, WindowEventBus,
     label_plugin::prelude::LabelComponent,
+    EventReader, MutWorld, RefWorld, Res, ResMut, WindowEventBus, DeviceEventBus
 };
 
 use super::{
-    controller_component::CameraController, 
-    DeviceEventBus,
     render_component::{
         CameraRenderComponent, CameraProjectionComponent, CameraViewComponent
     }, 
+    controller_component::CameraController, 
 };
 
 #[derive(Debug, hecs_macros::Bundle)]

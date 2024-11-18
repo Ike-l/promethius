@@ -2,7 +2,12 @@ use std::ops::Range;
 
 use crate::prelude::acceleration_structures::prelude::AABB;
 
-use super::{material::Material, mesh::{ColoredMesh, MaterialMesh}};
+use super::{
+    mesh::{
+        ColoredMesh, MaterialMesh
+    },
+    material::Material, 
+};
 
 #[derive(Debug)]
 pub enum Model {

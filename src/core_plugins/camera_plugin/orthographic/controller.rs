@@ -10,8 +10,7 @@ use super::super::{
         CameraProjectionComponent, CameraRenderComponent, CameraViewComponent
     }, 
     controller_component::CameraController, 
-    WindowEventBus, 
-    DeviceEventBus,
+    WindowEventBus, DeviceEventBus,
 };
 
 

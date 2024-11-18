@@ -1,7 +1,6 @@
 use crate::prelude::{
     object_plugin::prelude::{
-        DrawModel,
-        ObjectRegistry
+        DrawModel, ObjectRegistry
     },
     camera_plugin::prelude::{
         PerspProjection, CameraRenderComponent
@@ -10,10 +9,10 @@ use crate::prelude::{
 };
 
 use super::{
-    label_plugin::prelude::LabelComponent, 
     prelude::{
         PipelineType, RenderConfig, WindowDimensions
-    }
+    },
+    label_plugin::prelude::LabelComponent, 
 };
 
 use std::{

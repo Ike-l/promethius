@@ -1,4 +1,7 @@
-use crate::prelude::{acceleration_structures::prelude::AABB, promethius_std::prelude::Position};
+use crate::prelude::{
+    acceleration_structures::prelude::AABB, 
+    promethius_std::prelude::Position
+};
 
 pub trait Vertex {
     fn desc() -> wgpu::VertexBufferLayout<'static>;

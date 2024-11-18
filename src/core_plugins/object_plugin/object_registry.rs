@@ -1,5 +1,6 @@
 use std::collections::{
-    hash_map::Entry, HashMap
+    hash_map::Entry, 
+    HashMap
 };
 
 use wgpu::util::DeviceExt;

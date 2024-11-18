@@ -6,10 +6,10 @@ use std::{
 use cgmath::InnerSpace;
 
 use winit::{
-    dpi::PhysicalPosition, 
     event::{
         ElementState, MouseScrollDelta
     }, 
+    dpi::PhysicalPosition, 
     keyboard::KeyCode,
 };
 

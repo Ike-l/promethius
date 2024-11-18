@@ -5,11 +5,11 @@ use small_iter_fields::{
 };
 
 use crate::prelude::{
-    entity::prelude::RawRenderComponent,
-    texture::prelude::Texture,
     object_plugin::prelude::{
         ColoredVertex, TexturedVertex, Vertex
     },
+    entity::prelude::RawRenderComponent,
+    texture::prelude::Texture,
 };
 
 #[derive(Debug, Hash, PartialEq, Eq)]
