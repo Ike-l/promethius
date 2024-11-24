@@ -1,11 +1,16 @@
 mod tick;
 mod time;
+mod accumulators;
 
 pub mod prelude {
     pub use super::{
         tick::Tick, 
-        time::Time,
-        time::fps_counter,
+        time::{
+            Time, fps_counter
+        },
+        accumulators::{
+            Accumulator, Accumulators
+        }
     };
 }
 
@@ -19,6 +24,7 @@ impl PluginTrait for TimePlugin {
         app.add_system(1.001, tick::update_tick_count);
         app.add_resource(time::Time::default());
         app.add_resource(tick::Tick::default());
+        app.add_resource(accumulators::Accumulators::default());
 
     }
     fn id(&self) -> PluginId {
