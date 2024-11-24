@@ -120,8 +120,16 @@ impl RenderConfig {
                 targets: &[Some(wgpu::ColorTargetState {
                     format: color_format,
                     blend: Some(wgpu::BlendState {
-                        alpha: wgpu::BlendComponent::REPLACE,
-                        color: wgpu::BlendComponent::REPLACE,
+                        alpha: wgpu::BlendComponent {
+                            src_factor: wgpu::BlendFactor::SrcAlpha,
+                            dst_factor: wgpu::BlendFactor::OneMinusSrcAlpha,
+                            operation: wgpu::BlendOperation::Add
+                        },
+                        color: wgpu::BlendComponent {
+                            src_factor: wgpu::BlendFactor::SrcAlpha,
+                            dst_factor: wgpu::BlendFactor::OneMinusSrcAlpha,
+                            operation: wgpu::BlendOperation::Add
+                        },
                     }),
                     write_mask: wgpu::ColorWrites::ALL,
                 })],
@@ -131,14 +139,15 @@ impl RenderConfig {
                 topology,
                 strip_index_format: None,
                 front_face: wgpu::FrontFace::Ccw,
-                cull_mode: Some(wgpu::Face::Back),
+                //cull_mode: Some(wgpu::Face::Back),
+                cull_mode: None,
                 polygon_mode: wgpu::PolygonMode::Fill,
                 unclipped_depth: false,
                 conservative: false,
             },
             depth_stencil: depth_format.map(|format| wgpu::DepthStencilState {
                 format,
-                depth_write_enabled: true,
+                depth_write_enabled: false,
                 depth_compare: wgpu::CompareFunction::Less,
                 stencil: wgpu::StencilState::default(),
                 bias: wgpu::DepthBiasState::default(),

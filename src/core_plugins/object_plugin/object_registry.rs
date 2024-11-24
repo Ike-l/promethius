@@ -16,7 +16,7 @@ use crate::prelude::{
 };
 
 use super::{
-    acceleration_structures::prelude::AABB, 
+    acceleration_structures_plugin::prelude::AABB, 
     label_plugin::prelude::LabelComponent, 
     models::model::Model
 };

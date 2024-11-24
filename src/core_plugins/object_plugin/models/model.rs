@@ -1,6 +1,6 @@
 use std::ops::Range;
 
-use crate::prelude::acceleration_structures::prelude::AABB;
+use crate::prelude::acceleration_structures_plugin::prelude::AABB;
 
 use super::{
     mesh::{

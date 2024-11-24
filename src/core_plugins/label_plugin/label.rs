@@ -24,6 +24,16 @@ pub struct LabeledEntities {
     pub labels: BiMap<LabelComponent, Entity>
 }
 
+impl LabeledEntities {
+    pub fn get_entity(&self, label: &LabelComponent) -> Option<&Entity> {
+        self.labels.get_value(label)
+    }
+
+    pub fn get_label(&self, entity: &Entity) -> Option<&LabelComponent> {
+        self.labels.get_key(entity)
+    }
+}
+
 pub fn update_labeled_entities(mut labeled_entities: ResMut<LabeledEntities>, world: RefWorld) {
     labeled_entities.labels = world.query::<&LabelComponent>().iter().fold(BiMap::default(), |mut acc, (e, l)| {
         acc.insert(l.clone(), e);

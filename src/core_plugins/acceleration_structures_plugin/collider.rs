@@ -7,6 +7,7 @@ use super::{
     RefWorld, Res
 };
 
+// AutoCollider => AABB Calculated automatically every tick based on the `Mesh` and `ModelMatrix`
 #[derive(Debug, Clone, PartialEq)]
 pub struct ColliderComponent {
     pub bbox: AABB,
@@ -15,6 +16,18 @@ pub struct ColliderComponent {
 impl ColliderComponent {
     pub fn new(bbox: AABB) -> Self {
         Self { bbox }
+    }
+
+    pub fn length_x(&self) -> f64 {
+        (self.bbox.max.x - self.bbox.min.x).abs()
+    }
+
+    pub fn length_y(&self) -> f64 {
+        (self.bbox.max.y - self.bbox.min.y).abs()        
+    }
+
+    pub fn length_z(&self) -> f64 {
+        (self.bbox.max.z - self.bbox.min.z).abs()
     }
 }
 

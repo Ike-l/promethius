@@ -3,7 +3,7 @@ use super::{
 };
 
 use cgmath::{
-    Array, Deg, InnerSpace, Matrix3, Matrix4, Quaternion, Rotation3, SquareMatrix, Vector3, Vector4
+    Array, Deg, InnerSpace, Matrix4, One, Quaternion, Rotation3, Vector3, Vector4
 };
 
 use log::warn;
@@ -11,6 +11,7 @@ use log::warn;
 #[derive(Debug)]
 pub struct InstanceRenderComponent {
     pub visible: bool,
+	pub instance_label: String,
 
     pub local_translation: Vector3<FloatPrecision>,
     pub global_translation: Vector3<FloatPrecision>,
@@ -21,6 +22,7 @@ pub struct InstanceRenderComponent {
     pub local_scale: Vector3<FloatPrecision>,
     pub global_scale: Vector3<FloatPrecision>,
 
+	// model.color * instance.tint + instance.highlight;
     pub tint: Vector4<FloatPrecision>,
     pub highlight: Vector4<FloatPrecision>,
 }
@@ -29,12 +31,13 @@ impl Default for InstanceRenderComponent {
     fn default() -> Self {
         Self {
             visible: true,
+			instance_label: "".to_string(),
 
             local_translation: Vector3::from_value(0.0),
             global_translation: Vector3::from_value(0.0),
 
-            local_rotation: Quaternion::from(Matrix3::identity()),
-            global_rotation: Quaternion::from(Matrix3::identity()),
+            local_rotation: Quaternion::one(),
+            global_rotation: Quaternion::one(),
 
             local_scale: Vector3::from_value(1.0),
             global_scale: Vector3::from_value(1.0),

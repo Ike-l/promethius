@@ -3,7 +3,7 @@ use small_derive_deref::{
 };
 
 use super::{
-    acceleration_structures::prelude::{
+    acceleration_structures_plugin::prelude::{
         Collider, ColliderComponent, QuadTree
     }, 
     label_plugin::prelude::LabelComponent, 

@@ -190,7 +190,7 @@ impl QuadTree {
 #[cfg(test)]
 mod tests {
     use crate::prelude::{
-        acceleration_structures::prelude::ColliderComponent, 
+        acceleration_structures_plugin::prelude::ColliderComponent, 
         label_plugin::prelude::LabelComponent
     };
 

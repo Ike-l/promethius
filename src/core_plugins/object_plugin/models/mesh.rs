@@ -1,5 +1,5 @@
 use crate::prelude::{
-    acceleration_structures::prelude::AABB, 
+    acceleration_structures_plugin::prelude::AABB, 
     promethius_std::prelude::Position
 };
 
