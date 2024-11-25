@@ -120,16 +120,8 @@ impl RenderConfig {
                 targets: &[Some(wgpu::ColorTargetState {
                     format: color_format,
                     blend: Some(wgpu::BlendState {
-                        alpha: wgpu::BlendComponent {
-                            src_factor: wgpu::BlendFactor::SrcAlpha,
-                            dst_factor: wgpu::BlendFactor::OneMinusSrcAlpha,
-                            operation: wgpu::BlendOperation::Add
-                        },
-                        color: wgpu::BlendComponent {
-                            src_factor: wgpu::BlendFactor::SrcAlpha,
-                            dst_factor: wgpu::BlendFactor::OneMinusSrcAlpha,
-                            operation: wgpu::BlendOperation::Add
-                        },
+                        alpha: wgpu::BlendComponent::OVER,
+                        color: wgpu::BlendComponent::OVER,
                     }),
                     write_mask: wgpu::ColorWrites::ALL,
                 })],

@@ -22,6 +22,15 @@ impl Model {
             Model::Material(m) => m.gen_aabb(),
         }
     }
+    pub fn min_a(&self) -> f32 {
+        match &self {
+            Model::Colored(m) => m.min_a(),
+            Model::Material(_) => {
+                log::info!("Material Models will have 1.0 Alpha by default");
+                1.0
+            },
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -70,6 +79,10 @@ impl ColoredModel {
         }
 
         aabb
+    }
+
+    fn min_a(&self) -> f32 {
+        self.meshes.iter().fold(1.0, |acc, curr| acc.min(curr.min_a()))
     }
 }
 

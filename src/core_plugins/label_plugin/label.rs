@@ -6,7 +6,7 @@ use super::{
     RefWorld, ResMut
 };
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, Default)]
 pub struct LabelComponent {
     pub id: String
 }

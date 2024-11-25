@@ -217,17 +217,22 @@ pub fn render_system(object_registry: ResMut<ObjectRegistry>, state: Res<Vec<Sta
             camera.insert(camera_id, camera_render_component.bind_group());
         }
 
-        let mut object_list = PipelineType::to_hashmap(Vec::new());
 
-        for object in object_registry.objects.values() {
+        let mut object_list = PipelineType::to_hashmap(Vec::new());
+        for object in object_registry.objects.values() {            
             object_list.get_mut(&object.pipeline).unwrap().push(object);
         }
-        
+
+        for objects in object_list.values_mut() {
+            objects.sort_by(|a, b| b.min_a().partial_cmp(a.min_a()).unwrap());
+        }
+
         for (pipeline_type, object_list) in &object_list {
             let pipeline = state.render_config.pipelines().get(pipeline_type).expect(&format!("No pipeline found: {:?}", pipeline_type));
             render_pass.set_pipeline(pipeline);
-        
+            println!("New pipeline type");
             for object in object_list {
+                println!("Rendering object: {:?} with A: {:?}", object.label, object.min_a());
                 let instance_buffer = object.instance_buffer();
                 if instance_buffer.size() == 0 {
                     continue;

@@ -26,6 +26,7 @@ pub struct Object {
     instance_count: std::ops::Range<u32>,
     instance_buffer: wgpu::Buffer,
     aabb: AABB,
+    min_a: f32,
     pub label: LabelComponent,
     pub camera_label: LabelComponent,
     pub pipeline: PipelineType,
@@ -45,11 +46,12 @@ impl Object {
         );
 
         let aabb = model.gen_aabb();
-
+        let min_a = model.min_a();
         Self {
             instance_count,
             instance_buffer,
             aabb,
+            min_a,
             label,
             camera_label,
             pipeline,
@@ -67,6 +69,10 @@ impl Object {
 
     pub fn aabb(&self) -> &AABB {
         &self.aabb
+    }
+
+    pub fn min_a(&self) -> &f32 {
+        &self.min_a
     }
 }
 
@@ -141,14 +147,14 @@ pub fn update_registry_instances(
 
     let mut objects: HashMap<&LabelComponent, Vec<RawRenderComponent>> = HashMap::new();
 
-    let query = &mut world.query::<(&InstanceRenderComponent, &LabelComponent)>();
+    let query = &mut world.query::<&InstanceRenderComponent>();
 
-    for (_, (render, label)) in query {
+    for (_, render) in query {
         if !render.visible {
             continue   
         }
-        
-        match objects.entry(&label) {
+
+        match objects.entry(&render.object_label) {
             Entry::Occupied(mut entry) => { 
                 entry.get_mut().push(render.to_raw()); 
             },

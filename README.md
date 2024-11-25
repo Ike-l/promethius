@@ -11,5 +11,7 @@ My goals for this and the platform:
 
 
 ### Hidden Limitations:</br>
-* Transparent objects need to be "spawned" last.</br> 
-  > Since i use instanced rendering it is impossible- that i know of to "sort" the transparent objects before rendering</br>
+* Transparent *instances* need to be spawned **last**.</br> 
+  > Since i use instanced rendering it is impossible- that i know of to "sort" the transparent instances before rendering</br>
+  > However i *do* sort the objects themselves so they can be added in any order.</br>
+  >> My advice is to create a new object when transparency is needed and don't modify the transparency of the instance.</br>

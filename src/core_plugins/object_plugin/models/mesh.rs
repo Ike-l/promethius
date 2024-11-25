@@ -61,6 +61,10 @@ impl ColoredMesh {
             .iter()
             .fold(AABB::default(), |mut acc, cur| { acc.expand_pos(cur.into()); acc })
     }
+
+    pub fn min_a(&self) -> f32 {
+        self.raw_vertex_buffer.iter().fold(1.0, |acc, curr| acc.min(curr.color[3]))
+    }
 }
 
 #[derive(Debug, small_read_only::ReadOnly)]

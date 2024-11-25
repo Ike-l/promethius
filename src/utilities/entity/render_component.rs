@@ -1,3 +1,5 @@
+use crate::prelude::label_plugin::prelude::LabelComponent;
+
 use super::{
     raw_render_component::RawRenderComponent, FloatPrecision
 };
@@ -11,7 +13,7 @@ use log::warn;
 #[derive(Debug)]
 pub struct InstanceRenderComponent {
     pub visible: bool,
-	pub instance_label: String,
+	pub object_label: LabelComponent,
 
     pub local_translation: Vector3<FloatPrecision>,
     pub global_translation: Vector3<FloatPrecision>,
@@ -31,7 +33,7 @@ impl Default for InstanceRenderComponent {
     fn default() -> Self {
         Self {
             visible: true,
-			instance_label: "".to_string(),
+			object_label: LabelComponent::default(),
 
             local_translation: Vector3::from_value(0.0),
             global_translation: Vector3::from_value(0.0),

@@ -47,13 +47,9 @@ impl Collider {
 }
 
 pub fn update_colliders(world: RefWorld, object_registry: Res<ObjectRegistry>) {
-    let mut query = world.query::<(&InstanceRenderComponent, &LabelComponent, &mut ColliderComponent)>();
-    for (_, (
-        render,
-        label, 
-        collider)
-    ) in &mut query {
-        let aabb = match object_registry.objects.get(&label) {
+    let mut query = world.query::<(&InstanceRenderComponent, &mut ColliderComponent)>();
+    for (_, (render, collider)) in &mut query {
+        let aabb = match object_registry.objects.get(&render.object_label) {
             Some(o) => {
                 let old_aabb = o.aabb();
 
@@ -72,7 +68,7 @@ pub fn update_colliders(world: RefWorld, object_registry: Res<ObjectRegistry>) {
 
                 AABB::new(new_min, new_max)
             },
-            None => panic!("No object found with label: {:?}", label)
+            None => panic!("No object found with label: {:?}", &render.object_label)
         };
 
         collider.bbox = aabb;
